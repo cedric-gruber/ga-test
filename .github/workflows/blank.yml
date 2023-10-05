@@ -21,14 +21,19 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch        
+        id: source_branch
+        
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch='version/${{ steps.source_branch.outputs.branch }}'" >> $GITHUB_OUTPUT
+        id: new_branch
 
       # Runs a single command using the runners shell
       - name: New branch name
-        run: echo 'version/${{ steps.extract_branch.outputs.branch }}'
+        run: echo ${{ steps.new_branch.outputs.branch }}
 
       - uses: peterjgrainger/action-create-branch@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'version/${{ steps.extract_branch.outputs.branch }}'
+          branch: ${{ steps.new_branch.outputs.branch }}
