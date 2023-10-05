@@ -16,24 +16,19 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:  
-      - uses: actions/checkout@v2
-      
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: source_branch
-        
-      - name: Prepare new branch name
-        shell: bash
-        run: echo "branch='version/${{ steps.source_branch.outputs.branch }}'" >> $GITHUB_OUTPUT
-        id: new_branch
-
-      - name: Overwrite existing file
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Change something
         run: |
-          echo "2" > README.md  
-
-      - uses: peterjgrainger/action-create-branch@v2.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          find . -type f -name "*.md" -print0 | xargs -0 sed -i "s/foo/bar/g"
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@master
         with:
-          branch: ${{ steps.new_branch.outputs.branch }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_prefix: "[AUTO-COMMIT] foo/bar replace"
+      - name: Create pull request
+        uses: devops-infra/action-pull-request@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          body: "**Automated pull request**<br><br>Replaced foo/bar"
+          title: ${{ github.event.commits[0].message }}
