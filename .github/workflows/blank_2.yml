@@ -18,19 +18,24 @@ jobs:
     steps:  
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch_name=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: Change something
-        run: echo "this is a line" > README.md
+        run: echo "Simulate change file version" > README.md
       - name: Commit and push changes
         uses: devops-infra/action-commit-push@master
+        id: commit_changes
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_prefix: "[AUTO-COMMIT] foo/bar replace"
-          target_branch: update/version
+          target_branch: version/update
       - name: Create pull request
         uses: devops-infra/action-pull-request@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           body: "**Automated pull request**<br><br>Replaced foo/bar"
           title: ${{ github.event.commits[0].message }}
-          source_branch: update/version
-          target_branch: main
+          source_branch: ${{ steps.commit_changes.outputs.branch_name }}
+          target_branch: ${{ steps.extract_branch.outputs.branch_name }}
