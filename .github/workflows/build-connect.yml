@@ -13,5 +13,5 @@ jobs:
 
     steps:
       - name: Run a one-line script
-        run: echo Run workflow with version ${github.event.inputs.version}
+        run: echo "Run workflow with version ${github.event.inputs.version}"
         id: one-line-script
