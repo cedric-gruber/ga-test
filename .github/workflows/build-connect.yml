@@ -2,6 +2,10 @@ name: build-connect
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        type: boolean
+        description: Version
 
 jobs:
   build:
