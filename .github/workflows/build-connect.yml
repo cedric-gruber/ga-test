@@ -13,5 +13,5 @@ jobs:
 
     steps:
       - name: Run a one-line script
-        run: echo This workflow will be used to build Wecan Connect Docker image
+        run: echo Run workflow with version ${github.event.inputs.version}
         id: one-line-script
