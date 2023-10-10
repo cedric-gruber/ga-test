@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        type: boolean
         description: Version
+        required: true
 
 jobs:
   build:
