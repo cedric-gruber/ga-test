@@ -1,0 +1,20 @@
+name: update-version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Version Name
+        required: true
+      version_code:
+        description: Version Code
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run a one-line script
+        run: echo "Run workflow with version (${{ github.event.inputs.version_name }},${{ github.event.inputs.version_code }})"
+        id: one-line-script
